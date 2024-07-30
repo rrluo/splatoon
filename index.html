@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ededee">
+    <title>赞赏页面</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui/dist/css/mdui.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mdui/dist/js/mdui.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(to right, #f0f0f0, #e0e0e0);
+        }
+
+        .mdui-btn {
+            width: 200px;
+            height: 60px;
+            margin: 20px auto;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .mdui-btn-alipay,
+        .mdui-btn-scan {
+            background: #108ee9;
+        }
+
+        .mdui-btn-wechat {
+            background: #8dc285;
+        }
+
+        .mdui-img {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .mdui-alert {
+            width: 400px;
+            height: 100px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ff69b4;
+            font-size: 24px;
+        }
+
+        .mdui-alert-icon {
+            font-size: 40px;
+        }
+
+        .mdui-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mdui-center-horizontal {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mdui-animated {
+            animation-duration: 0.5s;
+            animation-fill-mode: both;
+        }
+
+        .mdui-slide-in {
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mdui-slide-out {
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideOut 0.5s forwards;
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+        <div class="mdui-container mdui-center">
+            <div class="mdui-center-horizontal">
+                <button id="alipay" class="mdui-btn mdui-btn-alipay mdui-ripple">支付宝赞赏</button>
+            </div>
+        </div>
+        <div class="mdui-container mdui-center">
+            <div class="mdui-center-horizontal">
+                <button id="wechat" class="mdui-btn mdui-btn-wechat mdui-ripple">微信赞赏</button>
+            </div>
+        </div>
+        <div id="wechatContent" class="mdui-container mdui-hidden">
+            <img id="img" class="mdui-img" src="splatoon.png" alt="微信二维码">
+            <div class="mdui-center-horizontal">
+                <button id="scan" class="mdui-btn mdui-btn-scan mdui-ripple mdui-animated" style="background: #ff69b4;">跳转微信扫一扫</button>
+            </div>
+        </div>
+
+    <script>
+        var alert = document.getElementById("alert");
+        var alipay = document.getElementById("alipay");
+        var wechat = document.getElementById("wechat");
+        var wechatContent = document.getElementById("wechatContent");
+        var img = document.getElementById("img");
+        var scan = document.getElementById("scan");
+        var isWechatClicked = false;
+
+        function checkWechat() {
+            var isWechat = navigator.userAgent.indexOf("MicroMessenger") > -1;
+            if (isWechat) {
+                scan.classList.add("mdui-hidden");
+                alipay.removeEventListener("click", alipayClickHandler);
+                alipay.addEventListener("click", function () {
+                    window.location.href = "https://rrluo.github.io/jump/api/?url=https://rrluo.me/qwq";
+                });
+            } else {
+                wechatContent.classList.add("mdui-hidden");
+                img.classList.add("mdui-hidden");
+                scan.classList.remove("mdui-hidden");
+            }
+        }
+
+        function checkAlipay() {
+            var isAlipay = navigator.userAgent.indexOf("Alipay") > -1;
+            if (isAlipay) {
+                window.location.href = "http://auth.xxpay.vip/api/alipay?returnUrl=http://rrluo.me/w.html";
+            }
+        }
+
+        function alipayClickHandler() {
+            window.location.href = "alipays://platformapi/startapp?appId=20000067&url=https://rrluo.me/qwq";
+        }
+
+        alipay.addEventListener("click", alipayClickHandler);
+
+        wechat.addEventListener("click", function () {
+            isWechatClicked = !isWechatClicked;
+            if (isWechatClicked) {
+                wechatContent.classList.remove("mdui-hidden");
+                wechatContent.classList.remove("mdui-slide-out");
+                wechatContent.classList.add("mdui-slide-in");
+                setTimeout(() => {
+                    img.style.opacity = '1';
+                }, 100);
+            } else {
+                img.style.opacity = '0';
+                wechatContent.classList.remove("mdui-slide-in");
+                wechatContent.classList.add("mdui-slide-out");
+                setTimeout(() => {
+                    wechatContent.classList.add("mdui-hidden");
+                }, 500);
+            }
+        });
+
+        scan.addEventListener("click", function () {
+            var wechatURL = "https://rrluo.me/doc";
+            window.location.href = wechatURL;
+        });
+
+        checkAlipay();
+        checkWechat();
+    </script>
+</body>
+
+</html>
